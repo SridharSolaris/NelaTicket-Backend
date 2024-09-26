@@ -1,5 +1,11 @@
 import express from "express";
-import { bookticket, getPrice, getAllBookings, getBookingsByEmail, getBookingById } from "../services/booking.service.js";
+import {
+  bookticket,
+  getPrice,
+  getAllBookings,
+  getBookingsByEmail,
+  getBookingById,
+} from "../services/booking.service.js";
 import { getmoviebyid } from "../services/movie.service.js";
 
 const router = express.Router();
@@ -23,16 +29,21 @@ router.post("/bookticket/:email/:mve_id", async (req, res) => {
     const { ticket_price } = await getPrice(theatre_name, show_name);
     console.log(ticket_price);
 
-    
     const movies = await getmoviebyid(mve_id);
     console.log(movies[0].mve_name);
 
     const movie_name = movies[0].mve_name;
 
-    const bookingData = await bookticket(req.body, mve_id, email, ticket_price,movie_name);
+    const bookingData = await bookticket(
+      req.body,
+      mve_id,
+      email,
+      ticket_price,
+      movie_name
+    );
     console.log(req.body);
     res.send({
-      book_date: req.body.book_date,
+      show_date: req.body.show_date,
       show_name: req.body.show_name,
       ticket: ticket_price,
       theatre_name: req.body.theatre_name,
@@ -52,7 +63,7 @@ router.get("/booked/:bookingId", async (req, res) => {
   try {
     const booking = await getBookingById(bookingId);
     res.send(booking);
-    console.log(booking)
+    console.log(booking);
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: "Something went wrong" });
@@ -60,13 +71,12 @@ router.get("/booked/:bookingId", async (req, res) => {
 });
 
 router.get("/booked/:email", async (req, res) => {
-  
   const { email } = req.params;
 
   try {
     const bookings = await getBookingsByEmail(email);
     res.send(bookings);
-    console.log(bookings)
+    console.log(bookings);
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: "Something went wrong" });
